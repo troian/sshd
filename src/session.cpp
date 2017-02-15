@@ -81,7 +81,7 @@ void session::parse::options(std::string const &ops)
 // --------------------------------------------------------------
 int session::chan_data(ssh_channel c, void *data, uint32_t len, int is_stderr)
 {
-	sp_channel chan = channels_.at(c);
+	sp_channel chan = (std::shared_ptr<channel> &&)channels_.at(c);
 
 	if (!chan->status().is_open()) {
 		LOG(WARNING) << "Channel is closed";

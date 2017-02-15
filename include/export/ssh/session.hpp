@@ -312,7 +312,7 @@ protected:
 	ssh_session                         session_;
 	sp_boost_io                         io_;
 	std::mutex                          channels_lock_;
-	std::map<ssh_channel , sp_channel>  channels_;
+	std::map<ssh_channel, sp_channel>   channels_;
 	std::atomic_bool                    session_alive_;
 	std::thread                         fwd_acceptor_;
 

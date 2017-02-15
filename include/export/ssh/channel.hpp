@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ssh/types.hpp>
+#include <cstdint>
 
 namespace ssh {
 
