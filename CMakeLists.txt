@@ -36,9 +36,9 @@ check_include_file_cxx(mutex HAVE_MUTEX)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(${OPENSSL_INCLUDE_DIR})
-include_directories(${LIBSSH_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDES})
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+include_directories(SYSTEM ${LIBSSH_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDES})
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${LibSSH_LIBRARY_DIRS})
