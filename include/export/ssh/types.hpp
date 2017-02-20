@@ -4,23 +4,23 @@
 #pragma once
 
 #include <easylogging++.h>
-#include <types/types.hpp>
+
+#include <sys/types.h>
+#include <libssh/libssh.h>
+#include <libssh/callbacks.h>
+#include <libssh/server.h>
 
 #include <map>
 #include <memory>
+#include <string>
 
 // Boost include
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
 
-// LibSSH include
-#include <sys/types.h>
-#include <libssh/libssh.h>
-#include <libssh/callbacks.h>
-#include <libssh/server.h>
-
 #include <ssh/exception.hpp>
+#include <types/types.hpp>
 
 #ifndef LOG_CLASS
 #define LOG_CLASS(LEVEL) CLOG(LEVEL, log_name_.c_str())
@@ -84,6 +84,18 @@ public:
 	{}
 
 	virtual ~base_class() = 0;
+
+	base_class(const base_class &rhs) :
+		log_name_(rhs.log_name_)
+		, log_(el::Loggers::getLogger(log_name_))
+	{}
+
+	base_class &operator=(const base_class &rhs) {
+		log_name_ = rhs.log_name_;
+		log_ = el::Loggers::getLogger(log_name_);
+
+		return *this;
+	}
 
 protected:
 	std::string  log_name_;

@@ -3,13 +3,16 @@
 //
 #pragma once
 
+#include <map>
+#include <string>
+
 #include <ssh/types.hpp>
 
 namespace ssh {
 
 class channel_callbacks {
 public:
-	explicit channel_callbacks();
+	channel_callbacks();
 
 	virtual ~channel_callbacks() = 0;
 
@@ -183,6 +186,8 @@ protected:
 class session : public base_class, public obj_management<class session>, public channel_callbacks {
 private:
 	class methods_base {
+	public:
+		virtual ~methods_base() {}
 	private:
 		friend class session;
 	protected:
@@ -192,7 +197,7 @@ public:
 
 	class set : public methods_base {
 	public:
-		void option(ssh::options type, long int option);
+		void option(ssh::options type, int32_t option);
 		void option(ssh::options type, const void *option);
 	};
 
@@ -231,6 +236,9 @@ public:
 	explicit session(sp_boost_io io, const session_signals &sig);
 
 	virtual ~session() = 0;
+
+	session(const session &) = delete;
+	session &operator=(const session &) = delete;
 
 public:
 	class set &set() {
@@ -328,4 +336,4 @@ private:
 	class parse                         parse_;
 };
 
-}
+} // namespace ssh

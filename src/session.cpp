@@ -9,16 +9,16 @@ namespace ssh {
 // --------------------------------------------------------------
 // Implemenation of class session::set
 // --------------------------------------------------------------
-void session::set::option(ssh::options type, long int option)
+void session::set::option(ssh::options type, int32_t option)
 {
-	if (ssh_options_set(session_, (enum ssh_options_e)type, (const void *)&option) == SSH_ERROR) {
+	if (ssh_options_set(session_, static_cast<enum ssh_options_e>(type), static_cast<const void *>(&option)) == SSH_ERROR) {
 		throw ssh_exception(session_);
 	}
 }
 
 void session::set::option(ssh::options type, const void *option)
 {
-	if (ssh_options_set(session_, (enum ssh_options_e)type, option) == SSH_ERROR) {
+	if (ssh_options_set(session_, static_cast<enum ssh_options_e>(type), option) == SSH_ERROR) {
 		throw ssh_exception(session_);
 	}
 }
@@ -81,7 +81,7 @@ void session::parse::options(std::string const &ops)
 // --------------------------------------------------------------
 int session::chan_data(ssh_channel c, void *data, uint32_t len, int is_stderr)
 {
-	sp_channel chan = (std::shared_ptr<channel> &&)channels_.at(c);
+	sp_channel chan = static_cast<std::shared_ptr<channel> &&>(channels_.at(c));
 
 	if (!chan->status().is_open()) {
 		LOG(WARNING) << "Channel is closed";
@@ -105,7 +105,7 @@ void session::chan_close(ssh_channel c)
 	try {
 		u_lock lock(channels_lock_);
 		channels_.erase(c);
-		sig_chan_((uintptr_t)c, false);
+		sig_chan_(reinterpret_cast<uintptr_t>(c), false);
 	} catch (const std::exception &e) {
 		LOG(ERROR) << e.what();
 	}
@@ -116,6 +116,12 @@ session::session(const std::string &log_name, sp_boost_io io, const session_sign
 	, channel_callbacks()
 	, io_(io)
 	, session_alive_(false)
+	, sig_dis_()
+	, sig_chan_()
+	, set_()
+	, get_()
+	, copy_()
+	, parse_()
 {
 	session_ = ssh_new();
 	if (session_ == NULL) {
@@ -187,7 +193,7 @@ void session::fwd_acceptor(const std::string &host, int port, bool multichannel)
 			u_lock lock(channels_lock_);
 			channels_.insert(std::pair<ssh_channel, sp_channel>(forward, chan));
 
-			sig_chan_((uintptr_t) forward, true);
+			sig_chan_(reinterpret_cast<uintptr_t>(forward), true);
 		}
 	}
 }

@@ -71,11 +71,11 @@ void proxy_channel::handle_read(const boost::system::error_code &ec, size_t byte
 	}
 }
 
-int proxy_channel::on_data(void *data, uint32_t len, int is_stderr)
+size_t proxy_channel::on_data(void *data, uint32_t len, int is_stderr)
 {
 	(void)is_stderr;
 
-	return (int)boost::asio::write(sock_, boost::asio::buffer(data, len));
+	return boost::asio::write(sock_, boost::asio::buffer(data, len));
 }
 
 } // namespace ssh

@@ -36,7 +36,7 @@ void event::fd_add(int fd, ssh_event_callback cb, void *userdata)
 	}
 }
 
-void event::fd_add(short events, int fd, ssh_event_callback cb, void *userdata)
+void event::fd_add(int16_t events, int fd, ssh_event_callback cb, void *userdata)
 {
 	if (ssh_event_add_fd(event_, fd, events, cb, userdata) != SSH_OK) {
 		throw std::runtime_error("Couldn't add an fd to the event");
@@ -77,8 +77,8 @@ void event::worker()
 	while (amount_.load(std::memory_order_acquire) > 0) {
 		if (ssh_event_dopoll(event_, 1000) == SSH_ERROR) {
 			continue;
-		};
-	};
+		}
+	}
 
 	LOGI_CLASS() << "Worker stopped";
 }

@@ -3,6 +3,7 @@
 #include <thread>
 #include <atomic>
 #include <memory>
+#include <string>
 
 #include <ssh/sshkey.hpp>
 #include <ssh/session.hpp>

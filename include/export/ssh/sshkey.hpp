@@ -4,6 +4,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include <ssh/types.hpp>
 
@@ -46,6 +47,9 @@ public:
 
 	~key_pair();
 
+	key_pair(const key_pair &) = delete;
+	key_pair &operator=(const key_pair &) = delete;
+
 public:
 	/**
 	 * \brief
@@ -81,4 +85,4 @@ private:
 	key_type type_;
 };
 
-}
+} // namespace ssh

@@ -18,7 +18,7 @@ public:
 public:
 	void fd_add(int fd, ssh_event_callback cb, void *userdata);
 
-	void fd_add(short events, int fd, ssh_event_callback cb, void *userdata);
+	void fd_add(int16_t events, int fd, ssh_event_callback cb, void *userdata);
 
 	void fd_del(int fd);
 
@@ -31,7 +31,7 @@ private:
 
 private:
 	ssh_event        event_;
-	short            events_;
+	int16_t          events_;
 
 	std::mutex       lock_;
 	std::atomic_int  amount_;

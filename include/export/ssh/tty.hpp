@@ -4,6 +4,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+
 #include <ssh/types.hpp>
 
 namespace ssh {

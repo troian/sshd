@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_set>
 #include <memory>
+#include <string>
 
 #include <ssh/types.hpp>
 #include <tools/base64.hpp>
@@ -27,7 +28,7 @@ protected:
 	} srv_types;
 
 public:
-	explicit server_auth();
+	server_auth();
 
 	virtual ~server_auth();
 

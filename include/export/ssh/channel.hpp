@@ -3,8 +3,12 @@
 //
 #pragma once
 
-#include <ssh/types.hpp>
 #include <cstdint>
+#include <map>
+#include <string>
+#include <vector>
+
+#include <ssh/types.hpp>
 
 namespace ssh {
 
@@ -65,6 +69,10 @@ public:
 
 	virtual ~channel();
 
+private:
+	channel(const channel &) = delete;
+	channel &operator=(const channel &) = delete;
+
 public:
 	class get &get() {
 		return get_;
@@ -76,7 +84,7 @@ public:
 
 	int write(const void *data, size_t len, bool is_stderr = false);
 
-	virtual int on_data(void *data, uint32_t len, int is_stderr);
+	virtual size_t on_data(void *data, uint32_t len, int is_stderr);
 
 protected:
 	session          *session_;
@@ -149,7 +157,7 @@ private:
 	 *
 	 * \return
 	 */
-	virtual int on_data(void *data, uint32_t len, int is_stderr);
+	virtual size_t on_data(void *data, uint32_t len, int is_stderr);
 
 private:
 	boost::asio::ip::tcp::socket   sock_;

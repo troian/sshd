@@ -1,10 +1,10 @@
+#include <poll.h>
+
 #include <ssh/ssh.hpp>
 #include <ssh/session.hpp>
 #include <ssh/server_session.hpp>
 #include <ssh/channel.hpp>
 #include <ssh/sshd.hpp>
-
-#include <poll.h>
 #include <ssh/bind.hpp>
 
 namespace ssh {
@@ -293,5 +293,5 @@ void sshd::acceptor_thread()
 	}
 }
 
-} // namespace sshd
+} // namespace ssh
 

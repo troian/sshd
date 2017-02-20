@@ -35,6 +35,8 @@ channel::channel(
 	, foreign_chan_(c != nullptr)
 	, io_(io)
 	, conn_sig_(conn_sig)
+	, get_()
+	, status_()
 {
 	if (!foreign_chan_) {
 		channel_ = ssh_channel_new(s->get().session());
@@ -72,7 +74,7 @@ channel::~channel()
 				conn_sig(id, false);
 			};
 
-			DEREF_IO(io_).post(boost::bind<void>(dis, (uintptr_t)channel_, conn_sig_));
+			DEREF_IO(io_).post(boost::bind<void>(dis, reinterpret_cast<uintptr_t>(channel_), conn_sig_));
 		}
 	}
 
@@ -98,7 +100,7 @@ int channel::write(const void *data, size_t len, bool is_stderr)
 	return ret;
 }
 
-int channel::on_data(void *data, uint32_t len, int is_stderr)
+size_t channel::on_data(void *data, uint32_t len, int is_stderr)
 {
 //	if (pty_)
 //		return ::write(pty_->fd(), (char *)data, len);

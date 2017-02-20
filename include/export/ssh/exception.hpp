@@ -3,31 +3,31 @@
 //
 #pragma once
 
-namespace ssh {
-
 #include <libssh/libssh.h>
 #include <libssh/server.h>
 #include <libssh/callbacks.h>
+
+#include <string>
+
+namespace ssh {
 
 /**
  * \brief
  */
 class ssh_exception {
 public:
-	explicit ssh_exception(ssh_session s)
-	{
-		code_ = ssh_get_error_code(s);
-		description_ = std::string(ssh_get_error(s));
-	}
+	explicit ssh_exception(ssh_session s) :
+		  code_ (ssh_get_error_code(s))
+		, description_ (std::string(ssh_get_error(s)))
+	{}
 
-	explicit ssh_exception(ssh_bind b)
-	{
-		code_ = ssh_get_error_code(b);
-		description_ = std::string(ssh_get_error(b));
-	}
+	explicit ssh_exception(ssh_bind b) :
+		  code_ (ssh_get_error_code(b))
+		, description_(std::string(ssh_get_error(b)))
+	{}
 
 	ssh_exception(const ssh_exception &e) :
-		code_(e.code_)
+		  code_(e.code_)
 		, description_(e.description_)
 	{
 	}

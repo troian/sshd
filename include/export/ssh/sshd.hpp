@@ -3,6 +3,9 @@
 //
 #pragma once
 
+#include <map>
+#include <string>
+
 #include <ssh/types.hpp>
 #include <ssh/server_session.hpp>
 #include <ssh/auth.hpp>

@@ -96,15 +96,15 @@ int pty::exec(const char *mode, const char *bash, const char *cmd)
 
 void pty::add_env()
 {
-	char *param = (char *)"TERM";
-	char *var = (char *)"xterm-256color";
+	char *param = const_cast<char *>("TERM");
+	char *var = const_cast<char *>("xterm-256color");
 
 	char *newvar = NULL;
 	int plen, vlen;
 	plen = strlen(param);
 	vlen = strlen(var);
 
-	newvar = (char *)malloc(plen + vlen + 2); /* 2 is for '=' and '\0' */
+	newvar = static_cast<char *>(malloc(plen + vlen + 2)); /* 2 is for '=' and '\0' */
 	memcpy(newvar, param, plen);
 	newvar[plen] = '=';
 	memcpy(&newvar[plen+1], var, vlen);

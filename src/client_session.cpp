@@ -48,6 +48,7 @@ client_session::client_session(sp_boost_io io, const session_signals &sig, int k
 	  session("SSH.CLIENT", io, sig)
 	, keep_alive_interval_(keep_alive)
 	, keep_alive_timer_(DEREF_IO(io))
+	, auth_()
 {
 	auth_.session_ = session_;
 }

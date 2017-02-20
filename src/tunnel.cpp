@@ -6,11 +6,10 @@
  * \Copyright(c)  "Artur Troian <troian dot ap at gmail dot com>"
  */
 
-#include <ssh/tunnel.hpp>
-#include <ssh/client_session.hpp>
-
 #include <poll.h>
 
+#include <ssh/tunnel.hpp>
+#include <ssh/client_session.hpp>
 #include <boost/asio.hpp>
 
 namespace ssh {

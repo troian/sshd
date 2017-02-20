@@ -6,13 +6,16 @@
 
 namespace ssh {
 
-key_pair::key_pair(const std::string &file)
+key_pair::key_pair(const std::string &file) :
+	  priv_(NULL)
+	, pub_(NULL)
+	, type_(key_type::UNKNOWN)
 {
 	if (ssh_pki_import_privkey_file(file.c_str(), NULL, NULL, NULL, &priv_) != SSH_OK) {
 		throw std::runtime_error("Couldn't open key file");
 	}
 
-	type_ = (key_type)ssh_key_type(priv_);
+	type_ = static_cast<key_type>(ssh_key_type(priv_));
 
 	if (ssh_pki_export_privkey_to_pubkey(priv_, &pub_) != SSH_OK ) {
 		ssh_key_free(priv_);
@@ -21,9 +24,11 @@ key_pair::key_pair(const std::string &file)
 }
 
 key_pair::key_pair(key_type type, int length) :
-	type_(type)
+	  priv_(NULL)
+	, pub_(NULL)
+	, type_(type)
 {
-	if (ssh_pki_generate((enum ssh_keytypes_e)type, length, &priv_) != SSH_OK) {
+	if (ssh_pki_generate(static_cast<enum ssh_keytypes_e>(type), length, &priv_) != SSH_OK) {
 		throw std::runtime_error("Couldn't generate key");
 	}
 
