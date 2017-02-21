@@ -20,7 +20,7 @@ event::~event()
 {
 	if (worker_.joinable()) {
 		u_lock lock(lock_);
-		amount_.store(0, std::memory_order_release);
+		amount_.store(0);
 		worker_.join();
 	}
 
@@ -74,7 +74,7 @@ void event::session_del(ssh_session s)
 
 void event::worker()
 {
-	while (amount_.load(std::memory_order_acquire) > 0) {
+	while (amount_.load() > 0) {
 		if (ssh_event_dopoll(event_, 1000) == SSH_ERROR) {
 			continue;
 		}

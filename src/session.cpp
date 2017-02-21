@@ -144,7 +144,7 @@ session::session(sp_boost_io io, const session_signals &sig) :
 
 session::~session()
 {
-	session_alive_.store(false, std::memory_order_release);
+	session_alive_.store(false);
 	if (fwd_acceptor_.joinable()) {
 		fwd_acceptor_.join();
 	}
@@ -176,7 +176,7 @@ void session::run_fwd_acceptor(std::string const &host, int port, bool multichan
 
 void session::fwd_acceptor(const std::string &host, int port, bool multichannel)
 {
-	while (session_alive_.load(std::memory_order_acquire) && multichannel) {
+	while (session_alive_.load() && multichannel) {
 		ssh_channel forward = ssh_channel_accept_forward(session_, 3000, NULL);
 
 		if (forward) {
