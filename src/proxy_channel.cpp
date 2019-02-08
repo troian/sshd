@@ -1,57 +1,49 @@
-#include <ssh/channel.hpp>
+#include <ssh/channel.hh>
 
 namespace ssh {
 
 proxy_channel::proxy_channel(
-			  sp_boost_io io
-			, session *s
-			, const std::string &host
-			, int port
+			  boost_io::sp io
+			, boost::shared_ptr<session> s
 			, ssh_channel c
 			, ssh_channel_callbacks cb
-			, chan_conn_signal conn_sig) :
-	  channel(io, "SSH.CH.PROXY", s, c, cb, conn_sig)
-	, sock_(DEREF_IO(io))
-	, resolver_(DEREF_IO(io))
-	, read_buf_(10240)
+			, chan_conn_signal conn_sig)
+	: channel(io, "SSH.CH.PROXY", s, c, cb, conn_sig)
+	, _sock(DEREF_IO(io))
+	, _read_buf(10240)
 {
-	try {
-		start(host, port);
-	} catch (...) {
-		throw;
-	}
 }
 
-proxy_channel::~proxy_channel()
-{
-	sock_.close();
-	resolver_.cancel();
+proxy_channel::~proxy_channel() {
+	_sock.close();
 }
 
-void proxy_channel::start(const std::string &host, int port)
-{
-	boost::asio::ip::tcp::resolver::query query(host, std::to_string(port));
-	boost::asio::ip::tcp::resolver::iterator iterator = resolver_.resolve(query);
+void proxy_channel::start(const std::string &host, int port) {
+	LOGI_CLASS() << "forwarding connection to " << host << ":" << std::to_string(port);
+	tcp::resolver::query query(host, std::to_string(port));
+	tcp::resolver _resolver(DEREF_IO(_io));
+	tcp::resolver::iterator iterator = _resolver.resolve(query);
 
 	try {
-		boost::asio::connect(sock_, iterator);
+		boost::asio::connect(_sock, iterator);
 	} catch (...) {
 		throw;
 	}
 
-	sock_.async_read_some(boost::asio::buffer(read_buf_.data(), read_buf_.capacity()),
+	LOGI_CLASS() << "connection forwarding started";
+
+	_sock.async_read_some(boost::asio::buffer(_read_buf.data(), _read_buf.capacity()),
 	                        boost::bind(
-		                          &proxy_channel::handle_read
-		                        , this
-		                        , boost::asio::placeholders::error
-		                        , boost::asio::placeholders::bytes_transferred));
+	                          &proxy_channel::handle_read
+	                        , shared_from_this()
+	                        , boost::asio::placeholders::error
+	                        , boost::asio::placeholders::bytes_transferred));
 }
 
-void proxy_channel::handle_read(const boost::system::error_code &ec, size_t bytes_received)
-{
+void proxy_channel::handle_read(const boost::system::error_code &ec, size_t bytes_received) {
 	if (!ec) {
-		int len = bytes_received;
-		uint8_t *ptr = read_buf_.data();
+		size_t len = bytes_received;
+		uint8_t *ptr = _read_buf.data();
 
 		for (int lenw = 0; len > 0; len -= lenw, ptr += lenw) {
 			try {
@@ -62,20 +54,19 @@ void proxy_channel::handle_read(const boost::system::error_code &ec, size_t byte
 			}
 		}
 
-		sock_.async_read_some(boost::asio::buffer(read_buf_.data(), read_buf_.capacity()),
+		_sock.async_read_some(boost::asio::buffer(_read_buf.data(), _read_buf.capacity()),
 			boost::bind(
-				&proxy_channel::handle_read
-				, this
+				  &proxy_channel::handle_read
+				, shared_from_this()
 				, boost::asio::placeholders::error
 				, boost::asio::placeholders::bytes_transferred));
 	}
 }
 
-size_t proxy_channel::on_data(void *data, uint32_t len, int is_stderr)
-{
-	(void)is_stderr;
+size_t proxy_channel::on_data(void *data, uint32_t len, int is_stderr) {
+	(void) is_stderr;
 
-	return boost::asio::write(sock_, boost::asio::buffer(data, len));
+	return boost::asio::write(_sock, boost::asio::buffer(data, len));
 }
 
 } // namespace ssh

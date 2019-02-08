@@ -5,8 +5,8 @@
 
 #include <string>
 
-#include <ssh/session.hpp>
-#include <ssh/sshkey.hpp>
+#include <ssh/session.hh>
+#include <ssh/sshkey.hh>
 
 #include <boost/asio.hpp>
 
@@ -25,20 +25,25 @@ private:
 		void pubkey_auto();
 		void pass(std::string const &pass);
 		void try_pubkey(ssh_key pubkey);
-		void pubkey(sp_key_pair key);
+		void pubkey(key_pair::sp key);
 
 	private:
-		ssh_session session_;
+		ssh_session _session;
 	};
 
 public:
-	explicit client_session(sp_boost_io io, const session_signals &sig, int keep_alive = 0);
+	explicit client_session(boost_io::sp io, const session_signals &sig, int keep_alive = 0);
 
-	virtual ~client_session();
+	~client_session() override;
+
 public:
 	template <typename... _Args>
-	static std::shared_ptr<class client_session> shared(_Args&&... __args) {
-		return std::make_shared<class client_session>(__args...);
+	static boost::shared_ptr<class client_session> shared(_Args&&... __args) {
+		return boost::make_shared<class client_session>(__args...);
+	}
+
+	auto shared_from_this() {
+		return shared_from(this);
 	}
 
 public:
@@ -48,7 +53,7 @@ public:
 	void connect();
 
 	class auth &auth() {
-		return auth_;
+		return _auth;
 	}
 
 public:
@@ -62,7 +67,7 @@ public:
 	 *
 	 * \return
 	 */
-	virtual std::string remote_banner();
+	std::string remote_banner() override;
 
 public:
 	/**
@@ -82,9 +87,9 @@ private:
 	void keep_alive(const boost::system::error_code& ec);
 
 private:
-	boost::posix_time::seconds                 keep_alive_interval_;
-	boost::asio::deadline_timer                keep_alive_timer_;
-	class auth                                 auth_;
+	boost::posix_time::seconds  _keep_alive_interval;
+	boost::asio::deadline_timer _keep_alive_timer;
+	class auth                  _auth;
 };
 
 } // namespace ssh

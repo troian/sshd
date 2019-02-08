@@ -2,7 +2,7 @@
 // Created by Artur Troian on 10/10/16.
 //
 
-#include <ssh/auth.hpp>
+#include <ssh/auth.hh>
 #include <openssl/sha.h>
 
 namespace ssh {

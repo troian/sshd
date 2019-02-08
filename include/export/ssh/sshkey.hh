@@ -6,30 +6,28 @@
 #include <memory>
 #include <string>
 
-#include <ssh/types.hpp>
+#include <ssh/types.hh>
 
 namespace ssh {
 
 /**
  * \brief
  */
-enum class key_type {
-	UNKNOWN = SSH_KEYTYPE_UNKNOWN,
-	DSS     = SSH_KEYTYPE_DSS,
-	RSA     = SSH_KEYTYPE_RSA,
-	RSA1    = SSH_KEYTYPE_RSA1,
-	ECDSA   = SSH_KEYTYPE_ECDSA
-};
-
-/**
- * \brief
- */
-using sp_key_pair = typename std::shared_ptr<class key_pair>;
-
-/**
- * \brief
- */
 class key_pair final : public obj_management<class key_pair> {
+public:
+	/**
+	 * \brief
+	 */
+	enum class type {
+		UNKNOWN = SSH_KEYTYPE_UNKNOWN,
+		DSS     = SSH_KEYTYPE_DSS,
+		RSA     = SSH_KEYTYPE_RSA,
+		RSA1    = SSH_KEYTYPE_RSA1,
+		ECDSA   = SSH_KEYTYPE_ECDSA
+	};
+
+	using sp_key = typename std::shared_ptr<ssh_key_struct>;
+
 public:
 	/**
 	 * \brief       Load key from file
@@ -43,11 +41,11 @@ public:
 	 *
 	 * \param[in]   type
 	 */
-	explicit key_pair(key_type type, int length);
+	explicit key_pair(type t, int length);
 
-	~key_pair();
+	~key_pair() = default;
 
-	key_pair(const key_pair &) = delete;
+	key_pair(const type &) = delete;
 	key_pair &operator=(const key_pair &) = delete;
 
 public:
@@ -56,33 +54,33 @@ public:
 	 *
 	 * \return
 	 */
-	ssh_key priv();
+	key_pair::sp_key priv();
 
 	/**
 	 * \brief
 	 *
 	 * \return
 	 */
-	ssh_key pub();
+	key_pair::sp_key pub();
 
 	/**
 	 * \brief
 	 *
 	 * \param b64
 	 */
-	void pub_b64(std::string &b64);
+	std::string pub_base64() const;
 
 	/**
 	 * \brief
 	 *
 	 * \return
 	 */
-	key_type type();
+	type get_type();
 
 private:
-	ssh_key  priv_;
-	ssh_key  pub_;
-	key_type type_;
+	sp_key  _priv;
+	sp_key  _pub;
+	type    _type;
 };
 
 } // namespace ssh

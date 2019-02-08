@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include <ssh/types.hpp>
+#include <ssh/types.hh>
 
 namespace ssh {
 
@@ -177,24 +177,24 @@ private:
 //	int chan_subsystem_req_cb_ext(ssh_session s, ssh_channel c, const char *subsystem, void *userdata);
 
 protected:
-	struct ssh_channel_callbacks_struct channel_cb_;
+	struct ssh_channel_callbacks_struct _channel_cb;
 };
 
 /**
  * \brief
  */
-class session : public base_class, public obj_management<class session>, public channel_callbacks {
+class session : public base_class, public channel_callbacks, public boost::enable_shared_from_this<session> {
 private:
 	class methods_base {
 	public:
-		virtual ~methods_base() {}
+		virtual ~methods_base() = default;
 	private:
 		friend class session;
 	protected:
-		ssh_session session_;
+		ssh_session _session;
 	};
-public:
 
+public:
 	class set : public methods_base {
 	public:
 		void option(ssh::options type, int32_t option);
@@ -226,35 +226,35 @@ private:
 	friend class copy;
 
 public:
-	explicit session(const std::string &log_name, sp_boost_io io, const session_signals &sig);
+	explicit session(const std::string &log_name, boost_io::sp io, const session_signals &sig);
 
 	/**
 	 * \brief
 	 *
 	 * \param io
 	 */
-	explicit session(sp_boost_io io, const session_signals &sig);
+	explicit session(boost_io::sp io, const session_signals &sig);
 
-	virtual ~session() = 0;
+	~session() override = 0;
 
 	session(const session &) = delete;
 	session &operator=(const session &) = delete;
 
 public:
 	class set &set() {
-		return set_;
+		return _set;
 	}
 
 	class get &get() {
-		return get_;
+		return _get;
 	}
 
 	class copy &copy() {
-		return copy_;
+		return _copy;
 	}
 
 	class parse &parse() {
-		return parse_;
+		return _parse;
 	}
 
 	/**
@@ -317,23 +317,23 @@ private:
 	void fwd_acceptor(const std::string &host, int port, bool multichannel);
 
 protected:
-	ssh_session                         session_;
-	sp_boost_io                         io_;
-	std::mutex                          channels_lock_;
-	std::map<ssh_channel, sp_channel>   channels_;
-	std::atomic_bool                    session_alive_;
-	std::thread                         fwd_acceptor_;
+	ssh_session                         _session;
+	boost_io::sp                        _io;
+	std::mutex                          _channels_lock;
+	std::map<ssh_channel, boost::shared_ptr<class channel>>   _channels;
+	std::atomic_bool                    _session_alive;
+	std::thread                         _fwd_acceptor;
 
 protected: // signals;
-//	conn_signal                         sig_conn_;
-	disconn_signal                      sig_dis_;
-	chan_conn_signal                    sig_chan_;
+//	conn_signal                         _sig_conn;
+	disconn_signal                      _sig_dis;
+	chan_conn_signal                    _sig_chan;
 
 private:
-	class set                           set_;
-	class get                           get_;
-	class copy                          copy_;
-	class parse                         parse_;
+	class set                           _set;
+	class get                           _get;
+	class copy                          _copy;
+	class parse                         _parse;
 };
 
 } // namespace ssh

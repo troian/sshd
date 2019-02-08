@@ -8,7 +8,7 @@
 
 #include <ssh/types.hpp>
 #include <ssh/server_session.hpp>
-#include <ssh/auth.hpp>
+#include <ssh/auth.hh>
 
 namespace ssh {
 

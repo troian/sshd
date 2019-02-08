@@ -4,7 +4,7 @@
 #pragma once
 
 #include <ssh/types.hpp>
-#include <ssh/auth.hpp>
+#include <ssh/auth.hh>
 
 namespace ssh {
 

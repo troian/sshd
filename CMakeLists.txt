@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(sshd LANGUAGES C CXX)
+project(sshd)
 
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
@@ -13,8 +13,18 @@ include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LibSSH REQUIRED libssh)
-pkg_check_modules(OpenSSL REQUIRED openssl)
+
+if (NOT LIBSSL_FOUND)
+	pkg_check_modules(LIBSSL REQUIRED libssl>=1.0.2l)
+endif()
+
+if (NOT LIBCRYPTO_FOUND)
+	pkg_check_modules(LIBCRYPTO REQUIRED libcrypto>=1.0.2l)
+endif()
+
+if (LIBSSL_FOUND)
+	pkg_check_modules(LIBSSH REQUIRED libssh>=0.7.3)
+endif()
 
 check_include_file_cxx(iostream HAVE_IOSTREAM)
 check_include_file_cxx(memory HAVE_MEMORY)
@@ -40,17 +50,12 @@ include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${LIBSSH_INCLUDE_DIRS})
 include_directories(SYSTEM ${Boost_INCLUDES})
 
-link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${LibSSH_LIBRARY_DIRS})
-link_directories(${OpenSSL_LIBRARY_DIRS})
-
 set(EXPORT_INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/export
+	${CMAKE_CURRENT_SOURCE_DIR}/include/export
 )
 
 add_library(
-	${PROJECT_NAME} STATIC
-
+	${PROJECT_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/channel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/channel_callbacks.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/client_session.cpp
@@ -59,29 +64,35 @@ add_library(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/sshkey.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/types.cpp
 
-	${EXPORT_INCLUDES}/ssh/channel.hpp
-	${EXPORT_INCLUDES}/ssh/client_session.hpp
-	${EXPORT_INCLUDES}/ssh/exception.hpp
-	${EXPORT_INCLUDES}/ssh/session.hpp
-	${EXPORT_INCLUDES}/ssh/sshkey.hpp
-	${EXPORT_INCLUDES}/ssh/types.hpp
+	${EXPORT_INCLUDES}/ssh/channel.hh
+	${EXPORT_INCLUDES}/ssh/client_session.hh
+	${EXPORT_INCLUDES}/ssh/exception.hh
+	${EXPORT_INCLUDES}/ssh/session.hh
+	${EXPORT_INCLUDES}/ssh/sshkey.hh
+	${EXPORT_INCLUDES}/ssh/types.hh
 )
 
 target_include_directories(
 	${PROJECT_NAME}
 	PUBLIC
-	${EXPORT_INCLUDES}
-	${OpenSSL_INCLUDE_DIRS}
-	${LibSSH_INCLUDE_DIRS}
-	${Boost_INCLUDES}
+		${EXPORT_INCLUDES}
 )
 
+target_link_directories(
+	${PROJECT_NAME}
+	PUBLIC
+	${LIBCRYPTO_LIBRARY_DIRS}
+	${LIBSSL_LIBRARY_DIRS}
+	${Boost_LIBRARY_DIRS}
+)
 target_link_libraries(
 	${PROJECT_NAME}
-	base64
-	typespp
-	${Boost_LIBRARIES}
-	${LibSSH_LIBRARIES}
-	ssh_threads
-    ${OpenSSL_LIBRARIES}
+	LINK_PUBLIC
+		base64
+		typespp
+		easyloggingpp
+		${Boost_LIBRARIES}
+		${LIBSSH_LIBRARIES}
+		${LIBSSL_LIBRARIES}
+		${LIBCRYPTO_LIBRARIES}
 )

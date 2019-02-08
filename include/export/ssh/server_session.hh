@@ -5,7 +5,7 @@
 
 #include <ssh/types.hpp>
 #include <ssh/session.hpp>
-#include <ssh/auth.hpp>
+#include <ssh/auth.hh>
 
 namespace ssh {
 

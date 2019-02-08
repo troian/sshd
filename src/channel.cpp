@@ -1,107 +1,102 @@
-#include <ssh/channel.hpp>
-#include <ssh/session.hpp>
+#include <ssh/channel.hh>
+#include <ssh/session.hh>
 
 namespace ssh {
 
 //#define BUF_SIZE 1024
 
 ssh_channel channel::get::channel() {
-	return channel_;
+	return _channel;
 }
 
-bool channel::status::is_open()
-{
-	return ssh_channel_is_open(channel_) != 0;
+bool channel::status::is_open() {
+	return ssh_channel_is_open(_channel) != 0;
 }
 
-bool channel::status::is_eof()
-{
-	return ssh_channel_is_eof(channel_) != 0;
+bool channel::status::is_eof() {
+	return ssh_channel_is_eof(_channel) != 0;
 }
 
 // --------------------------------------------------------------
 // Implementation of class channel
 // --------------------------------------------------------------
 channel::channel(
-			  sp_boost_io io
+			  boost_io::sp io
 			, const std::string &log_name
-			, session *s
+			, boost::shared_ptr<session> s
 			, ssh_channel c
 			, ssh_channel_callbacks cb
-			, chan_conn_signal conn_sig) :
-	  base_class(log_name)
-	, session_(s)
-	, channel_(c)
-	, foreign_chan_(c != nullptr)
-	, io_(io)
-	, conn_sig_(conn_sig)
-	, get_()
-	, status_()
+			, chan_conn_signal conn_sig)
+	: base_class(log_name)
+	, _session(s)
+	, _channel(c)
+	, _foreign_chan(c != nullptr)
+	, _io(io)
+	, _conn_sig(conn_sig)
+	, _get()
+	, _status()
 {
-	if (!foreign_chan_) {
-		channel_ = ssh_channel_new(s->get().session());
-		if (channel_ == NULL) {
+	if (!_foreign_chan) {
+		_channel = ssh_channel_new(s->get().session());
+		if (_channel == nullptr) {
 			throw std::runtime_error("Couldn't allocate ssh channel");
 		}
 	}
 
 	if (cb) {
-		if (ssh_set_channel_callbacks(channel_, cb) != SSH_OK) {
-			if (!foreign_chan_) {
+		if (ssh_set_channel_callbacks(_channel, cb) != SSH_OK) {
+			if (!_foreign_chan) {
 				// Free channel if we created the one
-				ssh_channel_free(channel_);
+				ssh_channel_free(_channel);
 			}
-			throw ssh_exception(session_->get().session());
+			throw ssh_exception(_session->get().session());
 		}
 	}
 
-	get_.channel_    = channel_;
-	status_.channel_ = channel_;
+	_get._channel    = _channel;
+	_status._channel = _channel;
 }
 
-channel::channel(sp_boost_io io, session *s, ssh_channel c, ssh_channel_callbacks cb, chan_conn_signal conn_sig) :
+channel::channel(boost_io::sp io, boost::shared_ptr<session> s, ssh_channel c, ssh_channel_callbacks cb, chan_conn_signal conn_sig) :
 	channel(io, "SSH.CHANNEL", s, c, cb, conn_sig)
 {}
 
-channel::~channel()
-{
-	if (ssh_channel_is_eof(channel_) == 0) {
-		ssh_channel_send_eof(channel_);
+channel::~channel() {
+	if (ssh_channel_is_eof(_channel) == 0) {
+		ssh_channel_send_eof(_channel);
 
 		// Notify channel closed
-		if (conn_sig_) {
+		if (_conn_sig) {
 			auto dis = [](uintptr_t id, chan_conn_signal conn_sig) {
 				conn_sig(id, false);
 			};
 
-			DEREF_IO(io_).post(boost::bind<void>(dis, reinterpret_cast<uintptr_t>(channel_), conn_sig_));
+			DEREF_IO(_io).post(boost::bind<void>(dis, reinterpret_cast<uintptr_t>(_channel), _conn_sig));
 		}
 	}
 
-	if (!foreign_chan_) {
-		ssh_channel_free(channel_);
+	if (!_foreign_chan) {
+		ssh_channel_free(_channel);
 	}
 }
 
-int channel::write(const void *data, size_t len, bool is_stderr)
-{
+int channel::write(const void *data, size_t len, bool is_stderr) {
 	int ret;
 
 	if (is_stderr) {
-		ret = ssh_channel_write_stderr(channel_, data, len);
+		ret = ssh_channel_write_stderr(_channel, data, len);
 	} else {
-		ret = ssh_channel_write(channel_, data, len);
+		ret = ssh_channel_write(_channel, data, len);
 	}
 
 	if (ret == SSH_ERROR) {
-		throw ssh_exception(session_->get().session());
+		throw ssh_exception(_session->get().session());
 	}
 
 	return ret;
 }
 
-size_t channel::on_data(void *data, uint32_t len, int is_stderr)
-{
+size_t channel::on_data(void *data, uint32_t len, int is_stderr) {
 //	if (pty_)
 //		return ::write(pty_->fd(), (char *)data, len);
 	return 0;
