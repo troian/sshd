@@ -16,7 +16,7 @@ namespace ssh {
 /**
  * \brief
  */
-class channel : public base_class, public obj_management<class channel>, public boost::enable_shared_from_this<channel> {
+class channel : public base_class, public obj_management<class channel>, public std::enable_shared_from_this<channel> {
 private:
 	class methods_base {
 	private:
@@ -50,7 +50,7 @@ public:
 	explicit channel(
 				  boost_io::sp io
 				, const std::string &log_name
-				, boost::shared_ptr<session> s
+				, std::shared_ptr<session> s
 				, ssh_channel c = nullptr
 				, ssh_channel_callbacks cb = nullptr
 				, chan_conn_signal conn_sig = nullptr);
@@ -63,7 +63,7 @@ public:
 	 */
 	explicit channel(
 				  boost_io::sp io
-				, boost::shared_ptr<session> s
+				, std::shared_ptr<session> s
 				, ssh_channel c = nullptr
 				, ssh_channel_callbacks cb = nullptr
 				, chan_conn_signal conn_sig = nullptr);
@@ -88,10 +88,10 @@ public:
 	virtual size_t on_data(void *data, uint32_t len, int is_stderr);
 
 protected:
-	boost::shared_ptr<session> _session;
-	ssh_channel                _channel;
-	bool                       _foreign_chan;
-	boost_io::sp               _io;
+	std::shared_ptr<session> _session;
+	ssh_channel              _channel;
+	bool                     _foreign_chan;
+	boost_io::sp             _io;
 
 private:
 	chan_conn_signal  _conn_sig;
@@ -120,7 +120,7 @@ public:
 	 */
 	proxy_channel(
 			  boost_io::sp io
-			, boost::shared_ptr<session> s
+			, std::shared_ptr<session> s
 			, ssh_channel c = nullptr
 			, ssh_channel_callbacks cb = nullptr
 			, chan_conn_signal conn_sig = nullptr);

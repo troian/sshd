@@ -165,10 +165,10 @@ void session::fwd_acceptor(const std::string &host, int port, bool multichannel)
 		if (forward) {
 			LOGI_CLASS() << "accepted channel. starting...";
 			try {
-				auto chan =  boost::make_shared<proxy_channel>(_io, shared_from_this(), forward, &_channel_cb, _sig_chan);
+				auto chan = std::make_shared<proxy_channel>(_io, shared_from_this(), forward, &_channel_cb, _sig_chan);
 
 				u_lock lock(_channels_lock);
-				_channels.insert(std::pair<ssh_channel, boost::shared_ptr<class channel>>(forward, chan));
+				_channels.insert(std::pair<ssh_channel, std::shared_ptr<class channel>>(forward, chan));
 				LOGI_CLASS() << "inserted channel";
 
 				chan->start(host, port);

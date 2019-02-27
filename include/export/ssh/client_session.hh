@@ -38,8 +38,8 @@ public:
 
 public:
 	template <typename... _Args>
-	static boost::shared_ptr<class client_session> shared(_Args&&... __args) {
-		return boost::make_shared<class client_session>(__args...);
+	static std::shared_ptr<class client_session> shared(_Args&&... __args) {
+		return std::make_shared<class client_session>(__args...);
 	}
 
 	auto shared_from_this() {

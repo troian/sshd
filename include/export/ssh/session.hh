@@ -183,7 +183,7 @@ protected:
 /**
  * \brief
  */
-class session : public base_class, public channel_callbacks, public boost::enable_shared_from_this<session> {
+class session : public base_class, public channel_callbacks, public std::enable_shared_from_this<session> {
 private:
 	class methods_base {
 	public:
@@ -317,12 +317,12 @@ private:
 	void fwd_acceptor(const std::string &host, int port, bool multichannel);
 
 protected:
-	ssh_session                         _session;
-	boost_io::sp                        _io;
-	std::mutex                          _channels_lock;
-	std::map<ssh_channel, boost::shared_ptr<class channel>>   _channels;
-	std::atomic_bool                    _session_alive;
-	std::thread                         _fwd_acceptor;
+	ssh_session                                           _session;
+	boost_io::sp                                          _io;
+	std::mutex                                            _channels_lock;
+	std::map<ssh_channel, std::shared_ptr<class channel>> _channels;
+	std::atomic_bool                                      _session_alive;
+	std::thread                                           _fwd_acceptor;
 
 protected: // signals;
 //	conn_signal                         _sig_conn;

@@ -23,7 +23,7 @@ bool channel::status::is_eof() {
 channel::channel(
 			  boost_io::sp io
 			, const std::string &log_name
-			, boost::shared_ptr<session> s
+			, std::shared_ptr<session> s
 			, ssh_channel c
 			, ssh_channel_callbacks cb
 			, chan_conn_signal conn_sig)
@@ -57,7 +57,7 @@ channel::channel(
 	_status._channel = _channel;
 }
 
-channel::channel(boost_io::sp io, boost::shared_ptr<session> s, ssh_channel c, ssh_channel_callbacks cb, chan_conn_signal conn_sig) :
+channel::channel(boost_io::sp io, std::shared_ptr<session> s, ssh_channel c, ssh_channel_callbacks cb, chan_conn_signal conn_sig) :
 	channel(io, "SSH.CHANNEL", s, c, cb, conn_sig)
 {}
 

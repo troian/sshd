@@ -22,23 +22,48 @@
 #include <ssh/exception.hh>
 #include <util/types.hh>
 
-template <typename Base>
-inline boost::shared_ptr<Base>
-shared_from_base(boost::enable_shared_from_this<Base>* base) {
-	return base->shared_from_this();
-}
+struct fd {
+private:
+	struct file_descriptor_closer {
+		void operator()(void *fd) noexcept {
+			if (fd) {
+				close(reinterpret_cast< int >(fd));
+			}
+		}
+	};
 
-template <typename Base>
-inline boost::shared_ptr<const Base>
-shared_from_base(boost::enable_shared_from_this<Base> const* base) {
-	return base->shared_from_this();
-}
+public:
+	fd(const std::string &pathname, int flags)
+		: m_fd(initialize(pathname, flags)) {
+	}
 
-template <typename That>
-inline boost::shared_ptr<That>
-shared_from(That* that) {
-	return boost::static_pointer_cast<That>(shared_from_base(that));
-}
+	explicit fd(const int opened_fd)
+		: m_fd(initialize(opened_fd)) {
+	}
+
+	explicit operator int() const { return reinterpret_cast< int >(m_fd.get()); }
+
+private:
+	std::shared_ptr<void> initialize(int f) {
+		try {
+			return std::shared_ptr<void>(reinterpret_cast<void *>(f), file_descriptor_closer());
+		} catch (std::bad_alloc &) {
+			close(f);
+			throw;
+		}
+	}
+
+	std::shared_ptr<void> initialize(const std::string &pathname, int flags) {
+		const int fd = open(pathname.c_str(), flags);
+		if (fd < 0) {
+			throw std::system_error(std::error_code(errno, std::system_category()), "cannot create file descriptor");
+		}
+
+		return initialize(fd);
+	}
+
+	std::shared_ptr<void> m_fd;
+};
 
 namespace ssh {
 

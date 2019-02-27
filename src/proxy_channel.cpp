@@ -4,7 +4,7 @@ namespace ssh {
 
 proxy_channel::proxy_channel(
 			  boost_io::sp io
-			, boost::shared_ptr<session> s
+			, std::shared_ptr<session> s
 			, ssh_channel c
 			, ssh_channel_callbacks cb
 			, chan_conn_signal conn_sig)

@@ -44,8 +44,6 @@ check_include_file_cxx(exception HAVE_EXCEPTION)
 check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 check_include_file_cxx(mutex HAVE_MUTEX)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${LIBSSH_INCLUDE_DIRS})
 include_directories(SYSTEM ${Boost_INCLUDES})

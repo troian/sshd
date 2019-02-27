@@ -72,6 +72,10 @@ std::string key_pair::pub_base64() const {
 
 	ssh_string_free_char(buf);
 
+	if (b64.rfind("ssh-rsa ", 0) != 0) {
+		b64 = "ssh-rsa " + b64;
+	}
+
 	return b64;
 }
 

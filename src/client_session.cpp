@@ -14,25 +14,25 @@ void client_session::auth::none() {
 }
 
 void client_session::auth::pass(std::string const &pass) {
-	if (ssh_userauth_password(_session, nullptr, pass.c_str()) == SSH_ERROR) {
+	if (ssh_userauth_password(_session, nullptr, pass.c_str()) != SSH_OK) {
 		throw ssh_exception(_session);
 	}
 }
 
 void client_session::auth::pubkey(key_pair::sp key) {
-	if (ssh_userauth_publickey(_session, nullptr, key->priv().get()) == SSH_ERROR) {
+	if (ssh_userauth_publickey(_session, nullptr, key->priv().get()) != SSH_OK) {
 		throw ssh_exception(_session);
 	}
 }
 
 void client_session::auth::try_pubkey(ssh_key pubkey) {
-	if (ssh_userauth_try_publickey(_session, nullptr, pubkey) == SSH_ERROR) {
+	if (ssh_userauth_try_publickey(_session, nullptr, pubkey) != SSH_OK) {
 		throw ssh_exception(_session);
 	}
 }
 
 void client_session::auth::pubkey_auto() {
-	if (ssh_userauth_publickey_auto(_session, nullptr, nullptr) == SSH_ERROR) {
+	if (ssh_userauth_publickey_auto(_session, nullptr, nullptr) != SSH_OK) {
 		throw ssh_exception(_session);
 	}
 }
