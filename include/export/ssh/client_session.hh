@@ -10,6 +10,8 @@
 
 #include <boost/asio.hpp>
 
+#include <util/types.hh>
+
 namespace ssh {
 
 /**

@@ -72,109 +72,13 @@ private:
 	 * @param session Current session handler
 	 * @param channel the actual channel
 	 * @param signal the signal name (without the SIG prefix)
-	 * @param core a boolean telling wether a core has been dumped or not
+	 * @param core a boolean telling whether a core has been dumped or not
 	 * @param errmsg the description of the exception
 	 * @param lang the language of the description (format: RFC 3066)
 	 * @param userdata Userdata to be passed to the callback function.
 	 */
 	static
 	void chan_exit_sig_cb_ext(ssh_session s, ssh_channel c, const char *signal, int core, const char *errmsg, const char *lang, void *userdata);
-
-//	/**
-//	 * @brief SSH channel PTY request from a client.
-//	 * @param channel the channel
-//	 * @param term The type of terminal emulation
-//	 * @param width width of the terminal, in characters
-//	 * @param height height of the terminal, in characters
-//	 * @param pxwidth width of the terminal, in pixels
-//	 * @param pxheight height of the terminal, in pixels
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 * @returns 0 if the pty request is accepted
-//	 * @returns -1 if the request is denied
-//	 */
-//	static
-//	int chan_pty_req_cb_ext(ssh_session s, ssh_channel c, const char *term, int width, int height, int pxwidth, int pwheight, void *userdata);
-//
-//	/**
-//	 * @brief SSH channel Shell request from a client.
-//	 * @param channel the channel
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 * @returns 0 if the shell request is accepted
-//	 * @returns 1 if the request is denied
-//	 */
-//	static
-//	int chan_shell_req_cb_ext(ssh_session s, ssh_channel c, void *userdata);
-//
-//	/**
-//	 * @brief SSH auth-agent-request from the client. This request is
-//	 * sent by a client when agent forwarding is available.
-//	 * Server is free to ignore this callback, no answer is expected.
-//	 * @param channel the channel
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 */
-//	static
-//	void chan_auth_agent_req_cb_ext(ssh_session s, ssh_channel c, void *userdata);
-//
-//	/**
-//	 * @brief SSH X11 request from the client. This request is
-//	 * sent by a client when X11 forwarding is requested(and available).
-//	 * Server is free to ignore this callback, no answer is expected.
-//	 * @param channel the channel
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 */
-//	static
-//	void chan_x11_req_cb_ext(ssh_session s, ssh_channel c, int single_connection, const char *auth_protocol, const char *auth_cookie, uint32_t screen_number, void *userdata);
-//
-//	/**
-//		 * @brief SSH channel PTY windows change (terminal size) from a client.
-//		 * @param channel the channel
-//		 * @param width width of the terminal, in characters
-//		 * @param height height of the terminal, in characters
-//		 * @param pxwidth width of the terminal, in pixels
-//		 * @param pxheight height of the terminal, in pixels
-//		 * @param userdata Userdata to be passed to the callback function.
-//		 * @returns 0 if the pty request is accepted
-//		 * @returns -1 if the request is denied
-//		 */
-//	static
-//	int chan_pty_window_change_cb_ext(ssh_session s, ssh_channel c, int width, int height, int pxwidth, int pwheight, void *userdata);
-//
-//	/**
-//	 * @brief SSH channel Exec request from a client.
-//	 * @param channel the channel
-//	 * @param command the shell command to be executed
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 * @returns 0 if the exec request is accepted
-//	 * @returns 1 if the request is denied
-//	 */
-//	static
-//	int chan_exec_req_cb_ext(ssh_session s, ssh_channel c, const char *command, void *userdata);
-//
-//	/**
-//	 * @brief SSH channel environment request from a client.
-//	 * @param channel the channel
-//	 * @param env_name name of the environment value to be set
-//	 * @param env_value value of the environment value to be set
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 * @returns 0 if the env request is accepted
-//	 * @returns 1 if the request is denied
-//	 * @warning some environment variables can be dangerous if changed (e.g.
-//	 * 			LD_PRELOAD) and should not be fulfilled.
-//	 */
-//	static
-//	int chan_env_req_cb_ext(ssh_session s, ssh_channel c,const char *env_name, const char *env_value, void *userdata);
-//
-//	/**
-//	 * @brief SSH channel subsystem request from a client.
-//	 *
-//	 * @param channel the channel
-//	 * @param subsystem the subsystem required
-//	 * @param userdata Userdata to be passed to the callback function.
-//	 * @returns 0 if the subsystem request is accepted
-//	 * @returns 1 if the request is denied
-//	 */
-//	static
-//	int chan_subsystem_req_cb_ext(ssh_session s, ssh_channel c, const char *subsystem, void *userdata);
 
 protected:
 	struct ssh_channel_callbacks_struct _channel_cb;
@@ -325,7 +229,6 @@ protected:
 	std::thread                                           _fwd_acceptor;
 
 protected: // signals;
-//	conn_signal                         _sig_conn;
 	disconn_signal                      _sig_dis;
 	chan_conn_signal                    _sig_chan;
 
