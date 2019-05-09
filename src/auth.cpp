@@ -8,7 +8,7 @@
 namespace ssh {
 
 // --------------------------------------------------------------
-// Implemenation of class server_auth
+// Implementation of class server_auth
 // --------------------------------------------------------------
 server_auth::server_auth()
 {}
@@ -62,7 +62,7 @@ bool server_auth::sha2_digest(const uint8_t *data, size_t size, std::string &dig
 }
 
 // --------------------------------------------------------------
-// Implemenation of class server_auth_add
+// Implementation of class server_auth_add
 // --------------------------------------------------------------
 server_auth_add::server_auth_add()
 {}

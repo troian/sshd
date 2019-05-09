@@ -38,7 +38,7 @@ void client_session::auth::pubkey_auto() {
 }
 
 // --------------------------------------------------------------
-// Implemenation of class client_session
+// Implementation of class client_session
 // --------------------------------------------------------------
 client_session::client_session(boost_io::sp io, const session_signals &sig, int keep_alive)
 	: session("SSH.CLIENT", io, sig)

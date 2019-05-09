@@ -7,7 +7,7 @@
 namespace ssh {
 
 // --------------------------------------------------------------
-// Implemenation of class session::set
+// Implementation of class session::set
 // --------------------------------------------------------------
 void session::set::option(ssh::options type, int32_t option) {
 	if (ssh_options_set(_session, static_cast<enum ssh_options_e>(type), static_cast<const void *>(&option)) == SSH_ERROR) {
@@ -22,7 +22,7 @@ void session::set::option(ssh::options type, const void *option) {
 }
 
 // --------------------------------------------------------------
-// Implemenation of class session::get
+// Implementation of class session::get
 // --------------------------------------------------------------
 ssh_session session::get::session() {
 	return _session;
@@ -49,7 +49,7 @@ int session::get::openssh_version() {
 }
 
 // --------------------------------------------------------------
-// Implemenation of class session::copy
+// Implementation of class session::copy
 // --------------------------------------------------------------
 void session::copy::options(const session &src) {
 	if (ssh_options_copy(src._session, &_session) == SSH_ERROR) {
@@ -58,7 +58,7 @@ void session::copy::options(const session &src) {
 }
 
 // --------------------------------------------------------------
-// Implemenation of class session::parse
+// Implementation of class session::parse
 // --------------------------------------------------------------
 void session::parse::options(std::string const &ops) {
 	if (ssh_options_parse_config(_session, ops.c_str()) == SSH_ERROR) {
@@ -67,7 +67,7 @@ void session::parse::options(std::string const &ops) {
 }
 
 // --------------------------------------------------------------
-// Implemenation of class session
+// Implementation of class session
 // --------------------------------------------------------------
 int session::chan_data(ssh_channel c, void *data, uint32_t len, int is_stderr) {
 	auto chan = _channels.at(c);
